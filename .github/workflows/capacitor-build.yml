@@ -38,10 +38,15 @@ jobs:
       - name: Build web app
         run: bun run build
 
-      - name: Install Capacitor CLI & Android platform
+      - name: Ensure dist/index.html exists
         run: |
-          bun add -d @capacitor/cli
+          ls dist/
+          test -f dist/index.html && echo "index.html found" || (echo "index.html NOT found!" && exit 1)
+
+      - name: Install Capacitor packages
+        run: |
           bun add @capacitor/core @capacitor/android
+          bun add -d @capacitor/cli
 
       - name: Init Capacitor (if not already initialized)
         run: |
@@ -49,11 +54,14 @@ jobs:
             bunx cap init "Multisession" "com.padhleyrr.multisession" --web-dir dist
           fi
 
-      - name: Add Android platform (if not present)
+      - name: Add Android platform
         run: |
           if [ ! -d "android" ]; then
             bunx cap add android
           fi
+
+      - name: Copy web assets to Android
+        run: bunx cap copy android
 
       - name: Sync Capacitor
         run: bunx cap sync android
