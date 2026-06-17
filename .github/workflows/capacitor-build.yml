@@ -36,7 +36,7 @@ jobs:
         run: bun install
 
       - name: Install extra Vite plugins for SPA build
-        run: bun add -d @vitejs/plugin-react @tanstack/router-plugin vite-tsconfig-paths
+        run: bun add -d @vitejs/plugin-react @tanstack/router-plugin
 
       - name: Build SPA for Capacitor
         run: bunx vite build --config vite.spa.config.ts
