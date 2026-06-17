@@ -1,0 +1,11 @@
+{
+  "appId": "com.padhleyrr.multisession",
+  "appName": "Multisession",
+  "webDir": "dist-spa",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}
