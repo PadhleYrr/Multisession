@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: 22
 
-      - name: Set up Java (for Android build)
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
@@ -35,33 +35,27 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Build web app
-        run: bun run build
+      - name: Install extra Vite plugins for SPA build
+        run: bun add -d @vitejs/plugin-react @tanstack/router-plugin vite-tsconfig-paths
 
-      - name: Ensure dist/index.html exists
+      - name: Build SPA for Capacitor
+        run: bunx vite build --config vite.spa.config.ts
+
+      - name: Verify dist-spa/index.html
         run: |
-          ls dist/
-          test -f dist/index.html && echo "index.html found" || (echo "index.html NOT found!" && exit 1)
+          ls dist-spa/
+          test -f dist-spa/index.html && echo "index.html OK" || (echo "index.html MISSING" && exit 1)
 
       - name: Install Capacitor packages
         run: |
           bun add @capacitor/core @capacitor/android
           bun add -d @capacitor/cli
 
-      - name: Init Capacitor (if not already initialized)
-        run: |
-          if [ ! -f "capacitor.config.ts" ] && [ ! -f "capacitor.config.json" ]; then
-            bunx cap init "Multisession" "com.padhleyrr.multisession" --web-dir dist
-          fi
-
       - name: Add Android platform
         run: |
           if [ ! -d "android" ]; then
             bunx cap add android
           fi
-
-      - name: Copy web assets to Android
-        run: bunx cap copy android
 
       - name: Sync Capacitor
         run: bunx cap sync android
